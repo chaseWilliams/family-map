@@ -2,7 +2,7 @@ package database
 
 import (
 	"database/sql"
-	"family-map-server/lib/models"
+	"github.com/chaseWilliams/family-map/lib/models"
 )
 
 /*

@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
-	"family-map-server/lib/routes"
+	"github.com/chaseWilliams/family-map/lib/routes"
 )
 
 /*

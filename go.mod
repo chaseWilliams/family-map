@@ -1,3 +1,3 @@
-module family-map-server
+module github.com/chaseWilliams/family-map
 
 go 1.13
