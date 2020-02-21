@@ -1,2 +1,6 @@
 *.zip
 *.sqlite
+*.sql
+__debug_bin
+go.sum
+launch.json

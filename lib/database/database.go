@@ -2,15 +2,29 @@ package database
 
 import (
 	"database/sql"
-	"github.com/chaseWilliams/family-map/lib/models"
+	"github.com/jmoiron/sqlx"
+)
+
+var (
+	db *sqlx.DB
+	tx *sqlx.Tx
 )
 
 /*
-CreateConnection is a factory-style function that returns a new connection
+StartSession is a factory-style function that returns a new connection
 to the database.
 */
-func CreateConnection() *sql.DB {
-	panic("not implemented")
+func StartSession() (err error) {
+	db, err = sqlx.Connect("sqlite3", "/Users/chasew/go/src/family_map_server/database.sqlite")
+	if err != nil {
+		return
+	}
+	tx, err = db.Beginx()
+	return
+}
+
+func GetTransaction() *sqlx.Tx {
+	return tx
 }
 
 /*
@@ -24,12 +38,5 @@ func ClearDatabase(db *sql.DB) {
 CreateTables will create all necessary tables
 */
 func CreateTables(db *sql.DB) {
-	panic("not implemented")
-}
-
-/*
-LoginUser will return User associated with auth token
-*/
-func LoginUser(auth string) models.User {
 	panic("not implemented")
 }
