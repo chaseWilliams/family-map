@@ -17,11 +17,18 @@ type User struct {
 	PersonID  string `db:"person_id"`
 }
 
+/*
+LoginData is what data needs to be passed to login a User
+*/
 type LoginData struct {
-	Username string `json:userName`
-	Password string `json:password`
+	Username string `json:"userName"`
+	Password string `json:"password"`
 }
 
+/*
+GetUser will perform the SQL query to get the appropriate User
+object for the login data
+*/
 func (d *LoginData) GetUser() (user *User, err error) {
 	tx := database.GetTransaction()
 	user = new(User)
@@ -34,15 +41,32 @@ func (d *LoginData) GetUser() (user *User, err error) {
 }
 
 /*
-create will take this User model and create it in the database
+Save will take this User model and create it in the database
 */
-func (u *User) create() {
-	panic("not implemented")
+func (u *User) Save() (err error) {
+	tx := database.GetTransaction()
+	_, err = tx.Exec(
+		`INSERT INTO USERS
+		VALUES (?, ?, ?, ?, ?, ?, ?);`,
+		u.Username,
+		u.Password,
+		u.Email,
+		u.FirstName,
+		u.LastName,
+		u.Gender,
+		u.PersonID,
+	)
+	return
 }
 
 /*
-GetUser returns a User given a username
+DeleteUser will delete the row in Users with the username
 */
-func GetUser(userName string) User {
-	panic("not implemented")
+func DeleteUser(username string) (err error) {
+	tx := database.GetTransaction()
+	_, err = tx.Exec(
+		"DELETE FROM Users WHERE username = ?",
+		username,
+	)
+	return
 }

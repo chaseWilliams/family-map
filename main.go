@@ -23,31 +23,37 @@ func main() {
 Sets a wrapper function to all service functions that goes and sets the appropriate headers
 */
 func setModelRoute(path string, service func (w http.ResponseWriter, r *http.Request) error ) {
-	addUniversalAttributes := func(w http.ResponseWriter, r *http.Request) {
+	genericHandlerFunc := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		database.StartSession() // this sets the global database state within the scope of the request
 		var err error = nil
 		lrw := &loggingResponseWriter{w, http.StatusOK}
-		defer func() {
-			tx := database.GetTransaction()
-			// if panicking, rollback and escalate panic
-			// else if service func returned an error, rollback
-			if p := recover(); p != nil{
-				tx.Rollback()
-				panic(p)
-			} else if err != nil {
-				tx.Rollback()
-				log.Println(err)
-			} else {
-				tx.Commit()
-			}
-		}()
+		// deferred function
+		defer deferredDatabaseCleanup(&err)
 		err = service(lrw, r)
 		log.Printf("request at %s resulted in %v\n", r.URL.Path, lrw.StatusCode)
 	}
-	http.HandleFunc(path, addUniversalAttributes)
+	http.HandleFunc(path, genericHandlerFunc)
 }
 
+func deferredDatabaseCleanup(err *error) {
+	tx := database.GetTransaction()
+	// if panicking, rollback and escalate panic
+	// else if service func returned an error, rollback
+	if p := recover(); p != nil{
+		tx.Rollback()
+		panic(p)
+	} else if *err != nil {
+		tx.Rollback()
+		log.Println(*err)
+	} else {
+		tx.Commit()
+	}
+}
+/*
+loggingResponseWriter is an extended version of ResponseWriter that keeps track of the current 
+status code for logging purposes
+*/
 type loggingResponseWriter struct {
     http.ResponseWriter
     StatusCode int
