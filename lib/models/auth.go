@@ -8,7 +8,7 @@ import (
 Auth represents the Auth table, correlating Users to auth tokens
 */
 type Auth struct {
-	Username string `db:"username"`
+	Username  string `db:"username"`
 	AuthToken string `db:"auth_token"`
 }
 

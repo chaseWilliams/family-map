@@ -1,8 +1,8 @@
 package models
 
 import (
-	"testing"
 	"github.com/chaseWilliams/family-map/lib/database"
+	"testing"
 )
 
 func TestLoginUser(t *testing.T) {
@@ -12,13 +12,13 @@ func TestLoginUser(t *testing.T) {
 		Password: "password",
 	}
 	user := User{
-		Username: "chasew",
-		Password: "password",
-		Email: "email@m.org",
+		Username:  "chasew",
+		Password:  "password",
+		Email:     "email@m.org",
 		FirstName: "chase",
-		LastName: "williams",
-		Gender: "m",
-		PersonID: "abc",
+		LastName:  "williams",
+		Gender:    "m",
+		PersonID:  "abc",
 	}
 	userResult, err := d.GetUser()
 	if err != nil {
@@ -44,13 +44,13 @@ func TestLoginFailure(t *testing.T) {
 func TestSaveUser(t *testing.T) {
 	database.StartTestingSession(t)
 	user := User{
-		Username: "chasetheman",
-		Password: "password",
-		Email: "email@m.org",
+		Username:  "chasetheman",
+		Password:  "password",
+		Email:     "email@m.org",
 		FirstName: "chase",
-		LastName: "williams",
-		Gender: "m",
-		PersonID: "abc",
+		LastName:  "williams",
+		Gender:    "m",
+		PersonID:  "abc",
 	}
 	err := user.Save()
 	if err != nil {
@@ -61,13 +61,13 @@ func TestSaveUser(t *testing.T) {
 func TestSaveUserFailure(t *testing.T) {
 	database.StartTestingSession(t)
 	user := User{
-		Username: "chasew",
-		Password: "password",
-		Email: "email@m.org",
+		Username:  "chasew",
+		Password:  "password",
+		Email:     "email@m.org",
 		FirstName: "chase",
-		LastName: "williams",
-		Gender: "m",
-		PersonID: "abc",
+		LastName:  "williams",
+		Gender:    "m",
+		PersonID:  "abc",
 	}
 	err := user.Save()
 	if err == nil {

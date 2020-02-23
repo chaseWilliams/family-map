@@ -3,9 +3,9 @@ package database
 import (
 	"database/sql"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 	"io/ioutil"
 	"testing"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 var (

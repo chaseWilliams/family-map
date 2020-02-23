@@ -21,7 +21,7 @@ type loginFailure struct {
 }
 
 /*
-Login checks for a User that matches the provided credentials and 
+Login checks for a User that matches the provided credentials and
 writes the appropriate response to the Response object
 */
 func Login(w http.ResponseWriter, r *http.Request) (err error) {

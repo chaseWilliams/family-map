@@ -1,14 +1,14 @@
 package routes
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 )
 
-/* 
+/*
 GetEvent returns specified event object
 */
 func GetEvent(w http.ResponseWriter, r *http.Request) {
-	m := map[string]string {"message": "success"}
+	m := map[string]string{"message": "success"}
 	json.NewEncoder(w).Encode(m)
 }
