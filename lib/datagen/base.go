@@ -3,6 +3,7 @@ package datagen
 import (
 	"encoding/json"
 	"net/http"
+	"fmt"
 )
 
 const (
@@ -42,21 +43,23 @@ func init() {
 	totalCityCount = cities.metadata.totalCount
 }
 
-func getGeoData(int offset) *apiResponse {
-	resp, err := http.Get(geoURL +
-		"geo/cities?hateoasMode=off&minPopulation=50000?offset=" +
-		string(offset))
+func getGeoData(offset int) (cities *apiResponse) {
+	resp, err := http.Get(fmt.Sprintf(
+		"%sgeo/cities?hateoasMode=off&minPopulation=50000?offset=%v",
+		geoURL,
+		offset,
+	))
 	if err != nil {
 		panic(err)
 	}
 	defer resp.Body.Close()
 
-	cities := new(apiResponse)
+	cities = new(apiResponse)
 	err = json.NewDecoder(resp.Body).Decode(cities)
 	if err != nil {
 		panic(err)
 	}
-	return cities
+	return
 }
 
 func getTotalCityCount() int {
