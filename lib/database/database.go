@@ -46,7 +46,7 @@ func StartTestingSession(t *testing.T) {
 		t.Errorf("DDL script failed: %v", err)
 		return
 	}
-	tx, err = db.Beginx()
+	tx, _ = db.Beginx()
 	return
 }
 

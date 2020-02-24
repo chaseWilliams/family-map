@@ -27,13 +27,6 @@ writes the appropriate response to the Response object
 func Login(w http.ResponseWriter, r *http.Request) (err error) {
 	loginData := new(models.LoginData)
 
-	// check that the method is POST
-	if r.Method != "POST" {
-		util.WriteNotFound(w)
-		err = fmt.Errorf("/user/login must be a POST request; request was %s", r.Method)
-		return
-	}
-
 	// convert the request payload from JSON to a loginData struct
 	err = json.NewDecoder(r.Body).Decode(loginData)
 	if err != nil {
