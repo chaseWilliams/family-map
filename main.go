@@ -4,18 +4,32 @@ import (
 	"fmt"
 	"github.com/chaseWilliams/family-map/lib/database"
 	"github.com/chaseWilliams/family-map/lib/routes"
+	"github.com/chaseWilliams/family-map/lib/models"
+	"github.com/chaseWilliams/family-map/lib/datagen"
 	"github.com/chaseWilliams/family-map/lib/util"
 	_ "github.com/chaseWilliams/family-map/lib/datagen"
 	_ "github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"net/http"
+	"database/sql"
 )
 
 /*
 main will set up the handlers and then start the server
 */
 func main() {
+	p := models.Person{
+		PersonID:  "abc",
+		Username:  "chasew",
+		FirstName: "chase",
+		LastName:  "williams",
+		Gender:    "m",
+		FatherID:  sql.NullString{"", false},
+		MotherID:  sql.NullString{"", false},
+		SpouseID:  sql.NullString{"", false},
+	}
+	datagen.CreateFamily(p, 3)
 	setModelRoute("/user/login", "POST", routes.Login)
 	setModelRoute("/", "ALL", routes.GetPerson) // all routes that don't match other route patterns
 	fmt.Println("serving at localhost:5000")

@@ -2,16 +2,18 @@ package datagen
 
 import (
 	"encoding/json"
-	"net/http"
 	"fmt"
+	"net/http"
 )
 
 const (
-	geoURL = "http://geodb-free-service.wirefreethought.com/v1/"
+	geoURL  = "http://geodb-free-service.wirefreethought.com/v1/"
+	nameURL = "https://uinames.com/api/?amount=500"
 )
 
 var (
 	totalCityCount int
+	nameData       []personData
 )
 
 type cityData struct {
@@ -33,17 +35,25 @@ type metadata struct {
 	totalCount    int
 }
 
-type apiResponse struct {
+type geoApiResponse struct {
 	data []cityData
 	metadata
+}
+
+type personData struct {
+	name    string
+	surname string
+	gender  string
+	region  string
 }
 
 func init() {
 	cities := getGeoData(0)
 	totalCityCount = cities.metadata.totalCount
+	getNameData()
 }
 
-func getGeoData(offset int) (cities *apiResponse) {
+func getGeoData(offset int) (cities *geoApiResponse) {
 	resp, err := http.Get(fmt.Sprintf(
 		"%sgeo/cities?hateoasMode=off&minPopulation=50000?offset=%v",
 		geoURL,
@@ -54,7 +64,7 @@ func getGeoData(offset int) (cities *apiResponse) {
 	}
 	defer resp.Body.Close()
 
-	cities = new(apiResponse)
+	cities = new(geoApiResponse)
 	err = json.NewDecoder(resp.Body).Decode(cities)
 	if err != nil {
 		panic(err)
@@ -62,6 +72,16 @@ func getGeoData(offset int) (cities *apiResponse) {
 	return
 }
 
-func getTotalCityCount() int {
-	return totalCityCount
+func getNameData() {
+	nameData = make([]personData, 500)
+	resp, err := http.Get(nameURL)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&nameData)
+	if err != nil {
+		panic(err)
+	}
 }

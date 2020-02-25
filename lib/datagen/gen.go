@@ -1,7 +1,6 @@
 package datagen
 
 import (
-	"database/sql"
 	"github.com/chaseWilliams/family-map/lib/models"
 	"math"
 )
@@ -106,41 +105,24 @@ for each generation, do the following (starting with root):
 */
 
 
-func randomPerson() (person familyTreeNode) {
-	return familyTreeNode{
-		PersonID:  "abc",
-		Username:  "chasew",
-		FirstName: "chase",
-		LastName:  "williams",
-		Gender:    "m",
-		straight:  true,
-		events:    make([]models.Event, 3),
-	}
-}
-
 func generateAncestors(child familyTreeNode, numGens int) {
-	initPopulation = math.Pow(2, numGens) * 10 // starting population size
-	population := make([][]familyTreeNode, numGens)
-	for i := 0; i < numGens; i++ {
-		population[i] = make([]familyTreeNode, initPopulation)
-	}
+	initPopulation := int(math.Pow(2, float64(numGens)) * 10) // starting population size
+	pop := make(population, numGens)
 	// set first population
+	pop[0] = make(generation, initPopulation)
 	for i := 0; i < initPopulation; i++ {
-		population[0][i] = randomPerson()
+		pop[0][i] = randomPerson(0)
 	}
 
 	year := 0
 	SimulationLoop:
 		for true {
-			for i := 0; i < numGens; i++ {
-				for j := 0; j < len(population[i]); j++ {
-					population[i][j].evaluateYear(year)
-				}
-			}
-			// when everyone in the numGens generation is dead, we stop the simulation
+			yearEventCheck(&pop, evaluateYear, year)
 			year++
-			for i := 0; i < len(population[numGens]); i++ {
-				if !population[numGens][i].dead {
+			// when everyone in the numGens generation and previous generations are dead,
+			// we stop the simulation
+			for i := 0; i < numGens; i++ {	
+				if !pop[i].allDead() {
 					continue SimulationLoop
 				}
 			}
@@ -153,6 +135,6 @@ CreateFamily will randomly create ancestors for the given person,
 up until numGens generations
 */
 func CreateFamily(person models.Person, numGens int) {
-
+	generateAncestors(randomPerson(0), numGens)
 	return
 }
