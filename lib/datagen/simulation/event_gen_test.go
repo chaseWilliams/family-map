@@ -20,20 +20,10 @@ func generateTestInitPopulation(min int, max int) (pop family.Population) {
 	return
 }
 
-func basicMetrics(t *testing.T, data []float64) {
-	sort.Float64s(data)
-	t.Logf("mean = %v", stat.Mean(data, nil))
-	t.Logf("std-dev = %v", math.Sqrt(stat.Variance(data, nil)))
-	t.Logf(
-		"10%% percentile: %v, 90%% percentile: %v",
-		stat.Quantile(0.1, stat.Empirical, data, nil),
-		stat.Quantile(0.9, stat.Empirical, data, nil),
-	)
-}
-
 func TestDeath(t *testing.T) {
 	iterations := 100
 	means := make([]float64, iterations)
+	medians := make([]float64, iterations)
 	stddev := make([]float64, iterations)
 	tenPercentile := make([]float64, iterations)
 	ninetyPercentile := make([]float64, iterations)
@@ -54,12 +44,14 @@ func TestDeath(t *testing.T) {
 		}
 		sort.Float64s(data)
 		means[i] = stat.Mean(data, nil)
+		medians[i] = stat.Quantile(0.5, stat.Empirical, data, nil)
 		stddev[i] = math.Sqrt(stat.Variance(data, nil))
 		tenPercentile[i] = stat.Quantile(0.1, stat.Empirical, data, nil)
 		ninetyPercentile[i] = stat.Quantile(0.9, stat.Empirical, data, nil)
 	}
 	t.Logf("Average metrics for %v iterations. Population size ranges from 20 - 50", iterations)
 	t.Logf("mean = %v", stat.Mean(means, nil))
+	t.Logf("median = %v", stat.Mean(medians, nil))
 	t.Logf("std-dev = %v", stat.Mean(stddev, nil))
 	t.Logf(
 		"10%% percentile: %v, 90%% percentile: %v",
@@ -226,13 +218,12 @@ func TestBabies(t *testing.T) {
 		- average num of children per marriage
 		- sample timeline of having children
 	*/
-	iterations := 5
-	avgNumChildren := make([]float64, iterations)
+	iterations := 10
+	avgNumChildren := make([][]float64, 0)
 
 	for i := 0; i < iterations; i++ {
 		year := 0
-		pop := generateTestInitPopulation(30, 50)
-		data := make([]float64, len(pop[0]))
+		pop := generateTestInitPopulation(50, 100)
 		for !pop[0].AllDead() {
 			for j := 0; j < len(pop[0]); j++ {
 				deathCheck(pop[0][j], &pop, year)
@@ -243,23 +234,34 @@ func TestBabies(t *testing.T) {
 			year++
 		}
 
-		for i, person := range pop[0] {
-			data[i] = float64(person.DeathYear())
+		numChildren := make([][]float64, 0)
+		for _, person := range pop[0] {
+			spouses := person.Spouses()
+			children := person.Children() 
+			for j, spouse := range spouses {
+				numChildren = expand2DIfNeeded(numChildren, j + 1)
+				if spouseChildren, ok := children[spouse]; ok {
+					numChildren[j] = append(numChildren[j], float64(len(spouseChildren)))
+				} else {
+					numChildren[j] = append(numChildren[j], 0)
+				}
+			}
 		}
-		sort.Float64s(data)
-		means[i] = stat.Mean(data, nil)
-		stddev[i] = math.Sqrt(stat.Variance(data, nil))
-		tenPercentile[i] = stat.Quantile(0.1, stat.Empirical, data, nil)
-		ninetyPercentile[i] = stat.Quantile(0.9, stat.Empirical, data, nil)
+		avgNumChildren = expand2DIfNeeded(avgNumChildren, len(numChildren))
+		for x, nums := range numChildren {
+			avgNumChildren[x] = append(avgNumChildren[x], stat.Mean(nums, nil))
+		}
 	}
-	t.Logf("Average metrics for %v iterations. Population size ranges from 20 - 50", iterations)
-	t.Logf("mean = %v", stat.Mean(means, nil))
-	t.Logf("std-dev = %v", stat.Mean(stddev, nil))
-	t.Logf(
-		"10%% percentile: %v, 90%% percentile: %v",
-		stat.Mean(tenPercentile, nil),
-		stat.Mean(ninetyPercentile, nil),
-	)
+	t.Logf("Average metrics for %v iterations. Population size ranges from 50 - 100", iterations)
+	t.Log("Average number of children for x marriage:")
+	for i, nums := range avgNumChildren {
+		t.Logf(
+			"%d\t%.2f +/- %.2f kids",
+			i + 1,
+			stat.Mean(nums, nil),
+			math.Sqrt(stat.Variance(nums, nil)),
+		)
+	}
 }
 
 func TestPopulationSizeChange(t *testing.T) {

@@ -61,13 +61,15 @@ func (f *Person) Divorce(year int) {
 	if !f.married {
 		panic(fmt.Sprintf("Person is not married\n%v", *f))
 	}
-	f.divorceYears = append(f.divorceYears, year)
-	f.married = false
-
+	
 	spouse, err := f.CurrSpouse()
 	if err != nil {
 		panic(err)
 	}
+
+	f.divorceYears = append(f.divorceYears, year)
+	f.married = false
+
 	spouse.divorceYears = append(spouse.divorceYears, year)
 	spouse.married = false
 }
