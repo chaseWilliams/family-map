@@ -61,7 +61,7 @@ func (f *Person) Divorce(year int) {
 	if !f.married {
 		panic(fmt.Sprintf("Person is not married\n%v", *f))
 	}
-	
+
 	spouse, err := f.CurrSpouse()
 	if err != nil {
 		panic(err)
@@ -215,6 +215,22 @@ func (pop *Population) GetAlive() []*Person {
 		}
 	}
 	return people
+}
+
+func (pop *Population) AddPerson(f *Person) {
+	generation := 0
+	for i, gen := range *pop {
+		for _, p := range gen {
+			if (p == f.mother || p == f.father) && i >= generation {
+				generation = i + 1
+			}
+		}
+	}
+	if generation >= len(*pop) {
+		// should only need to add one more generation
+		*pop = append(*pop, make(Generation, 0))
+	}
+	(*pop)[generation] = append((*pop)[generation], f)
 }
 
 /*

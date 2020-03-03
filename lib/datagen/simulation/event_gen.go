@@ -13,21 +13,23 @@ var (
 	eventGens = []eventCheck{
 		deathCheck,
 		marriageCheck,
+		divorceCheck,
+		babyCheck,
 	}
 )
 
-func evaluateYear(f *family.Person, pop *family.Population, year int) {
+func personYearCheck(f *family.Person, pop *family.Population, year int) {
 	for _, generator := range eventGens {
 		generator(f, pop, year)
 	}
 }
 
-func yearEventCheck(pop *family.Population, check eventCheck, year int) {
+func populationYearCheck(pop *family.Population, year int) {
 	for i := 0; i < len(*pop); i++ {
 		for j := 0; j < len((*pop)[i]); j++ {
 			person := (*pop)[i][j]
 			if !person.IsDead() {
-				check(person, pop, year)
+				personYearCheck(person, pop, year)
 			}
 		}
 	}
@@ -150,7 +152,7 @@ func babyCheck(f *family.Person, pop *family.Population, year int) {
 	numChildrenWithSpouse := float64(len(children[spouse]))
 	avgAge := stat.Mean([]float64{float64(f.Age(year)), float64(spouse.Age(year))}, nil)
 	// prob: (80% - (avg age of parents) * 1.2) * ( 1 / (num children * 0.5 + 1))
-	prob := (0.8 - (avgAge * 2.5 / 100)) * (1 / (numChildrenWithSpouse * 0.5 + 1))
+	prob := (0.8 - (avgAge * 2.5 / 100)) * (1 / (numChildrenWithSpouse * 0.25 + 1))
 	roll := rand.Float64()
 	if roll > prob {
 		return
@@ -160,4 +162,5 @@ func babyCheck(f *family.Person, pop *family.Population, year int) {
 	child.HaveParents(husband, wife)
 	husband.HaveChild(child, year)
 	wife.HaveChild(child, year)
+	pop.AddPerson(child)
 }

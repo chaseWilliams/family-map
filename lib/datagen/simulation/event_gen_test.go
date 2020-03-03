@@ -72,7 +72,7 @@ func TestMarriageAndDivorce(t *testing.T) {
 			average time person was single
 			sample person's marriage timeline (marriages + divorces)
 	*/
-	iterations := 5
+	iterations := 10
 	avgPercentHomosexual := make([]float64, iterations)
 	// index 0: data for people married 0 times, etc.
 	avgPercentPeopleMarriedXTimes := make([][]float64, 0)
@@ -218,7 +218,7 @@ func TestBabies(t *testing.T) {
 		- average num of children per marriage
 		- sample timeline of having children
 	*/
-	iterations := 10
+	iterations := 25
 	avgNumChildren := make([][]float64, 0)
 
 	for i := 0; i < iterations; i++ {
@@ -265,7 +265,47 @@ func TestBabies(t *testing.T) {
 }
 
 func TestPopulationSizeChange(t *testing.T) {
+	/*
+	metrics:
+		- 
+	*/
+	iterations := 25
+	startingPopSize := 100
+	completeGenerations := 5
 
+	avgGenSizes := make([][]float64, completeGenerations)
+	for i := 0; i < completeGenerations; i++ {
+		avgGenSizes[i] = make([]float64, iterations)
+	}
+
+	for iter := 0; iter < iterations; iter ++ {
+		pop := generateTestInitPopulation(50, 100)
+		year := 0
+		for len(pop) < completeGenerations || !pop[completeGenerations - 1].AllDead() {
+			populationYearCheck(&pop, year)
+			year++
+		}
+
+		for i := 0; i < completeGenerations; i++ {
+			gen := pop[i]
+			avgGenSizes[i][iter] = float64(len(gen))
+		}
+	}
+	t.Logf(
+		"Metrics for %d iterations starting with %d people, going until %d generation is dead",
+		iterations,
+		startingPopSize,
+		completeGenerations,
+	)
+	t.Log("Average generation sizes:")
+	for i, sizes := range avgGenSizes {
+		t.Logf(
+			"%d\t%.2f +/- %.2f people",
+			i + 1,
+			stat.Mean(sizes, nil),
+			math.Sqrt(stat.Variance(sizes, nil)),
+		)
+	}
 }
 
 func expandIfNeeded(slice []float64, length int) []float64 {
