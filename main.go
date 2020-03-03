@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/chaseWilliams/family-map/lib/database"
-	"github.com/chaseWilliams/family-map/lib/datagen/external"
 	"github.com/chaseWilliams/family-map/lib/routes"
 	"github.com/chaseWilliams/family-map/lib/util"
 	_ "github.com/jmoiron/sqlx"
@@ -16,7 +15,6 @@ import (
 main will set up the handlers and then start the server
 */
 func main() {
-	external.SetupCityData()
 	setModelRoute("/user/login", "POST", routes.Login)
 	setModelRoute("/", "ALL", routes.GetPerson) // all routes that don't match other route patterns
 	fmt.Println("serving at localhost:5000")

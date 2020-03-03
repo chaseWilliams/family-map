@@ -104,7 +104,7 @@ func TestMarriageAndDivorce(t *testing.T) {
 			}
 			marriageCount := len(person.Spouses())
 
-			numPeopleMarriedXTimes = expandIfNeeded(numPeopleMarriedXTimes, marriageCount + 1)
+			numPeopleMarriedXTimes = expandIfNeeded(numPeopleMarriedXTimes, marriageCount+1)
 			ageForXMarriage = expand2DIfNeeded(ageForXMarriage, marriageCount)
 			lengthOfXMarriage = expand2DIfNeeded(lengthOfXMarriage, marriageCount)
 			timeSingleBeforeMarriageX = expand2DIfNeeded(timeSingleBeforeMarriageX, marriageCount)
@@ -128,9 +128,9 @@ func TestMarriageAndDivorce(t *testing.T) {
 
 			for i, year := range person.MarriageYears() {
 				if i == 0 {
-					timeSingleBeforeMarriageX[i] = append(timeSingleBeforeMarriageX[i], float64(person.Age(year) - 18)) // single since eligible to be married
+					timeSingleBeforeMarriageX[i] = append(timeSingleBeforeMarriageX[i], float64(person.Age(year)-18)) // single since eligible to be married
 				} else {
-					timeSingleBeforeMarriageX[i] = append(timeSingleBeforeMarriageX[i], float64(year - divorceYears[i-1]))
+					timeSingleBeforeMarriageX[i] = append(timeSingleBeforeMarriageX[i], float64(year-divorceYears[i-1]))
 				}
 			}
 		}
@@ -138,23 +138,23 @@ func TestMarriageAndDivorce(t *testing.T) {
 		populationSize := float64(len(pop[0]))
 		avgPercentHomosexual[iter] = numHomosexualMarriages / populationSize
 		avgPercentPeopleMarriedXTimes = expand2DIfNeeded(
-			avgPercentPeopleMarriedXTimes, 
-			len(numPeopleMarriedXTimes), 
+			avgPercentPeopleMarriedXTimes,
+			len(numPeopleMarriedXTimes),
 		)
 		avgAgeForXMarriage = expand2DIfNeeded(
-			avgAgeForXMarriage, 
-			len(ageForXMarriage), 
+			avgAgeForXMarriage,
+			len(ageForXMarriage),
 		)
 		avgLengthOfXMarriage = expand2DIfNeeded(
-			avgLengthOfXMarriage, 
-			len(lengthOfXMarriage), 
+			avgLengthOfXMarriage,
+			len(lengthOfXMarriage),
 		)
 		avgTimeSingleBeforeMarriageX = expand2DIfNeeded(
-			avgTimeSingleBeforeMarriageX, 
-			len(timeSingleBeforeMarriageX), 
+			avgTimeSingleBeforeMarriageX,
+			len(timeSingleBeforeMarriageX),
 		)
 		for i, num := range numPeopleMarriedXTimes {
-			avgPercentPeopleMarriedXTimes[i] = append(avgPercentPeopleMarriedXTimes[i], num / populationSize)
+			avgPercentPeopleMarriedXTimes[i] = append(avgPercentPeopleMarriedXTimes[i], num/populationSize)
 		}
 		for i, nums := range ageForXMarriage {
 			avg := stat.Mean(nums, nil)
@@ -164,7 +164,7 @@ func TestMarriageAndDivorce(t *testing.T) {
 		}
 		for i, nums := range lengthOfXMarriage {
 			avgLengthOfXMarriage[i] = append(avgLengthOfXMarriage[i], stat.Mean(nums, nil))
-		} 
+		}
 		for i, nums := range timeSingleBeforeMarriageX {
 			avgTimeSingleBeforeMarriageX[i] = append(avgTimeSingleBeforeMarriageX[i], stat.Mean(nums, nil))
 		}
@@ -173,21 +173,21 @@ func TestMarriageAndDivorce(t *testing.T) {
 	t.Logf("Metrics for %v iterations", iterations)
 	t.Logf(
 		"Average percent of homosexual marriages: %.2f%%",
-		stat.Mean(avgPercentHomosexual, nil) * 100,
+		stat.Mean(avgPercentHomosexual, nil)*100,
 	)
 	t.Log("Average percent of people married x times:")
 	for i, nums := range avgPercentPeopleMarriedXTimes {
 		t.Logf(
 			"%d\t%.2f%%",
 			i,
-			stat.Mean(nums, nil) * 100,
+			stat.Mean(nums, nil)*100,
 		)
 	}
 	t.Log("Average age of people at x marriage:")
 	for i, nums := range avgAgeForXMarriage {
 		t.Logf(
 			"%d\t%.2f +/- %.2f years old",
-			i + 1,
+			i+1,
 			stat.Mean(nums, nil),
 			math.Sqrt(stat.Variance(nums, nil)),
 		)
@@ -196,7 +196,7 @@ func TestMarriageAndDivorce(t *testing.T) {
 	for i, nums := range avgLengthOfXMarriage {
 		t.Logf(
 			"%d\t%.2f +/- %.2f years",
-			i + 1,
+			i+1,
 			stat.Mean(nums, nil),
 			math.Sqrt(stat.Variance(nums, nil)),
 		)
@@ -205,7 +205,7 @@ func TestMarriageAndDivorce(t *testing.T) {
 	for i, nums := range avgTimeSingleBeforeMarriageX {
 		t.Logf(
 			"%d\t%.2f +/- %.2f years",
-			i + 1,
+			i+1,
 			stat.Mean(nums, nil),
 			math.Sqrt(stat.Variance(nums, nil)),
 		)
@@ -214,9 +214,9 @@ func TestMarriageAndDivorce(t *testing.T) {
 
 func TestBabies(t *testing.T) {
 	/*
-	metrics:
-		- average num of children per marriage
-		- sample timeline of having children
+		metrics:
+			- average num of children per marriage
+			- sample timeline of having children
 	*/
 	iterations := 25
 	avgNumChildren := make([][]float64, 0)
@@ -237,9 +237,9 @@ func TestBabies(t *testing.T) {
 		numChildren := make([][]float64, 0)
 		for _, person := range pop[0] {
 			spouses := person.Spouses()
-			children := person.Children() 
+			children := person.Children()
 			for j, spouse := range spouses {
-				numChildren = expand2DIfNeeded(numChildren, j + 1)
+				numChildren = expand2DIfNeeded(numChildren, j+1)
 				if spouseChildren, ok := children[spouse]; ok {
 					numChildren[j] = append(numChildren[j], float64(len(spouseChildren)))
 				} else {
@@ -257,7 +257,7 @@ func TestBabies(t *testing.T) {
 	for i, nums := range avgNumChildren {
 		t.Logf(
 			"%d\t%.2f +/- %.2f kids",
-			i + 1,
+			i+1,
 			stat.Mean(nums, nil),
 			math.Sqrt(stat.Variance(nums, nil)),
 		)
@@ -266,8 +266,8 @@ func TestBabies(t *testing.T) {
 
 func TestPopulationSizeChange(t *testing.T) {
 	/*
-	metrics:
-		- 
+		metrics:
+			-
 	*/
 	iterations := 25
 	startingPopSize := 100
@@ -278,10 +278,10 @@ func TestPopulationSizeChange(t *testing.T) {
 		avgGenSizes[i] = make([]float64, iterations)
 	}
 
-	for iter := 0; iter < iterations; iter ++ {
+	for iter := 0; iter < iterations; iter++ {
 		pop := generateTestInitPopulation(50, 100)
 		year := 0
-		for len(pop) < completeGenerations || !pop[completeGenerations - 1].AllDead() {
+		for len(pop) < completeGenerations || !pop[completeGenerations-1].AllDead() {
 			populationYearCheck(&pop, year)
 			year++
 		}
@@ -301,7 +301,7 @@ func TestPopulationSizeChange(t *testing.T) {
 	for i, sizes := range avgGenSizes {
 		t.Logf(
 			"%d\t%.2f +/- %.2f people",
-			i + 1,
+			i+1,
 			stat.Mean(sizes, nil),
 			math.Sqrt(stat.Variance(sizes, nil)),
 		)

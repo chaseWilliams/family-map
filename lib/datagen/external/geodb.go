@@ -105,3 +105,10 @@ func (c City) Save() (err error) {
 	)
 	return
 }
+
+func getCities() (cities []City, err error) {
+	tx := database.GetTransaction()
+	cities = []City{}
+	err = tx.Select(&cities, "SELECT * FROM Cities")
+	return
+}

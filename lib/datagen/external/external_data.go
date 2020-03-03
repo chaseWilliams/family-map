@@ -14,8 +14,6 @@ var (
 	nameData       []personData
 )
 
-
-
 type personData struct {
 	Name    string `json:"name"`
 	Surname string `json:"surname"`
@@ -30,7 +28,6 @@ func init() {
 	setNameData()
 }
 */
-
 
 func setNameData() {
 	nameData = make([]personData, 500)

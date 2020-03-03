@@ -7,7 +7,7 @@ import (
 )
 
 /*
-RandomPerson returns a pointer to newly constructed random family.Person 
+RandomPerson returns a pointer to newly constructed random family.Person
 who is born in the provided year
 */
 func RandomPerson(year int) (p *Person) {
