@@ -1,18 +1,25 @@
-package datagen
-
-import (
-	"github.com/chaseWilliams/family-map/lib/models"
-	"math"
-)
+package simulation
 
 /*
+import (
+	"math"
+
+	"github.com/chaseWilliams/family-map/lib/models"
+)
+*/
+/*
 TODO
+
+EVENTS !!
+certain Person methods should also create respective events
+
 implement all eventChecks
 in generateAncestors:
 	initial population should all be clustered somewhere
 	after population is completely created, choose someone in the numGen generation
 	to be the user. Then, all family members of the user are saved to the database.
 In marriageCheck, make sure to include corner case where there is no one available to marry
+
 */
 
 /*
@@ -104,8 +111,8 @@ for each generation, do the following (starting with root):
 	b. else, go to next generation (do step one for children)
 */
 
-
-func generateAncestors(child familyTreeNode, numGens int) {
+/*
+func generateAncestors(child Person, numGens int) {
 	initPopulation := int(math.Pow(2, float64(numGens)) * 10) // starting population size
 	pop := make(population, numGens)
 	// set first population
@@ -129,12 +136,15 @@ func generateAncestors(child familyTreeNode, numGens int) {
 			break
 		}
 }
+*/
 
 /*
 CreateFamily will randomly create ancestors for the given person,
 up until numGens generations
 */
+/*
 func CreateFamily(person models.Person, numGens int) {
 	generateAncestors(randomPerson(0), numGens)
 	return
 }
+*/
