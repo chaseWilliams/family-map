@@ -15,7 +15,7 @@ import (
 FillUser will fill out a user's ancestry tree, and remove previous ancestry data
 if it exists.
 */
-func FillUser(w http.ResponseWriter, r *http.Request) (err error) {
+func FillUser(w http.ResponseWriter, r *http.Request, user models.User) (err error) {
 	paramString := strings.Replace(r.URL.Path, "/fill/", "", 1)
 	params := strings.Split(paramString, "/")
 	username := params[0]
@@ -26,6 +26,16 @@ func FillUser(w http.ResponseWriter, r *http.Request) (err error) {
 			panic(err)
 		}
 	}
+
+	user, err = models.GetUser(username)
+	if err != nil {
+		util.WriteBadResponse(
+			w,
+			"could not find user: " + err.Error(),
+		)
+		return
+	}
+
 	// clear database of all persons and events attached to user
 	// create user person
 	err = database.ClearFamily(username)
@@ -33,14 +43,6 @@ func FillUser(w http.ResponseWriter, r *http.Request) (err error) {
 		util.WriteBadResponse(
 			w,
 			fmt.Sprintf("could not clean database (%v)", err.Error()),
-		)
-		return
-	}
-	user, err := models.GetUser(username)
-	if err != nil {
-		util.WriteBadResponse(
-			w,
-			fmt.Sprintf("could not find user: %v", err.Error()),
 		)
 		return
 	}

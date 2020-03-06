@@ -40,6 +40,31 @@ func NewAuthToken(user User) (token string, err error) {
 	return
 }
 
-func AssertAuth(username, auth string) bool {
-	return false
+/*
+AssertAuth returns whether or not auth token is valid
+*/
+func AssertAuth(token string) (User, bool) {
+	tx, err := database.GetTransaction()
+	if err != nil {
+		panic(err)
+	}
+
+	authResult := []Auth{}
+	err = tx.Select(
+		&authResult,
+		"SELECT * FROM Auth WHERE auth_token = ?",
+		token,
+	)
+	if err != nil {
+		panic(err)
+	}
+	var user User
+	if len(authResult) == 0 {
+		return user, false
+	}
+	user, err = GetUser(authResult[0].Username)
+	if err != nil {
+		panic(err)
+	}
+	return user, true
 }

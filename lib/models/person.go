@@ -37,6 +37,50 @@ type PersonJSON struct {
 }
 
 /*
+ToPerson returns a Person struct based on 
+this struct's data
+*/
+func (p PersonJSON) ToPerson() Person {
+	person := Person{
+		PersonID: p.PersonID,
+		Username: p.Username,
+		FirstName: p.FirstName,
+		LastName: p.LastName,
+		Gender: p.Gender,
+		FatherID: sql.NullString{p.FatherID, true},
+		MotherID: sql.NullString{p.MotherID, true},
+		SpouseID: sql.NullString{p.SpouseID, true},
+	}
+	if len(p.FatherID) == 0 {
+		person.FatherID.Valid = false
+	}
+	if len(p.MotherID) == 0 {
+		person.MotherID.Valid = false
+	}
+	if len(p.SpouseID) == 0 {
+		person.SpouseID.Valid = false
+	}
+	return person
+}
+
+/*
+ToJSON returns a compliant PersonJSON
+based on this person's data
+*/
+func (p Person) ToJSON() PersonJSON {
+	return PersonJSON{
+		PersonID: p.PersonID,
+		Username: p.Username,
+		FirstName: p.FirstName,
+		LastName: p.LastName,
+		Gender: p.Gender,
+		FatherID: p.FatherID.String,
+		MotherID: p.MotherID.String,
+		SpouseID: p.SpouseID.String,
+	}
+}
+
+/*
 Save will take this Person model and create it in the database
 */
 func (p *Person) Save() (err error) {
@@ -85,6 +129,19 @@ func GetPerson(personID string) (person *Person, err error) {
 		"SELECT * FROM Persons WHERE person_id = ?",
 		personID,
 	).StructScan(person)
+	return
+}
+
+/*
+GetFamily returns all people related to the username
+*/
+func GetFamily(username string) (family []Person, err error) {
+	tx, err := database.GetTransaction()
+	family = []Person{}
+	if err != nil {
+		return
+	}
+	err = tx.Select(&family, "SELECT * FROM Persons WHERE username = ?", username)
 	return
 }
 

@@ -91,9 +91,6 @@ Dies will appropriately set the Person as dead at given year
 */
 func (f *Person) Dies(year int) {
 	f.deathYear = year
-	if f.married {
-		f.Divorce(year)
-	}
 	f.createEvent("DEATH", year)
 }
 
@@ -334,6 +331,9 @@ func (pop *Population) AddPerson(f *Person) {
 AreFamily returns whether or not the two people are family members
 */
 func AreFamily(a *Person, b *Person) bool {
+	if a == b {
+		return false
+	}
 	// are parents or siblings x removed
 	if recursiveAreParentsOrSiblings(a, b) {
 		return true
@@ -454,12 +454,14 @@ func (pop Population) RandomFamily(personModel models.Person, numGen int) []*Per
 	person.model.FirstName = personModel.FirstName
 	person.model.LastName = personModel.LastName
 	person.model.Gender = personModel.Gender
-	person.spouses = []*Person{} // remove spouses of the person
+	for i := range person.events {
+		person.events[i].PersonID = personModel.PersonID
+	}
 
 	familyMembers := []*Person{person}
 	for _, gen := range pop {
 		for _, stranger := range gen {
-			if !AreFamily(person, stranger) {
+			if AreFamily(person, stranger) {
 				familyMembers = append(familyMembers, stranger)
 			}
 		}

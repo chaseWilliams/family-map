@@ -24,7 +24,7 @@ type loginFailure struct {
 Login checks for a User that matches the provided credentials and
 writes the appropriate response to the Response object
 */
-func Login(w http.ResponseWriter, r *http.Request) (err error) {
+func Login(w http.ResponseWriter, r *http.Request, user models.User) (err error) {
 	loginData := new(models.LoginData)
 
 	// convert the request payload from JSON to a loginData struct
@@ -38,7 +38,8 @@ func Login(w http.ResponseWriter, r *http.Request) (err error) {
 	}
 
 	// get the User matching the credentials
-	user, err := loginData.GetUser()
+	userP, err := loginData.GetUser()
+	user = *userP
 	if err != nil {
 		util.WriteResponse(
 			w,
@@ -52,7 +53,7 @@ func Login(w http.ResponseWriter, r *http.Request) (err error) {
 	}
 
 	// get a new auth token
-	token, err := models.NewAuthToken(*user)
+	token, err := models.NewAuthToken(user)
 	if err != nil {
 		util.WriteResponse(
 			w,

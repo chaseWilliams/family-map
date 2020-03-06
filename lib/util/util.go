@@ -7,12 +7,12 @@ import (
 )
 
 /*
-RandomID will generate a random ID that is 8 characters long
+RandomID will generate a random ID that is 16 characters long
 */
 func RandomID() string {
-	lower := 48
+	lower := 65
 	upper := 90
-	bytes := make([]byte, 8)
+	bytes := make([]byte, 16)
 	for i := range bytes {
 		bytes[i] = byte(lower + rand.Intn(upper-lower+1))
 	}

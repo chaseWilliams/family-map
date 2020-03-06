@@ -62,3 +62,20 @@ func GetEvent(eventID string) (event *Event, err error) {
 	).StructScan(event)
 	return
 }
+
+/*
+GetAllEvents will return all events associated with the username
+*/
+func GetAllEvents(username string) (events []Event, err error) {
+	tx, err := database.GetTransaction()
+	if err != nil {
+		return
+	}
+	events = []Event{}
+	err = tx.Select(
+		&events,
+		"SELECT * FROM Events WHERE username = ?",
+		username,
+	)
+	return
+}

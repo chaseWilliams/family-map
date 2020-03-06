@@ -2,15 +2,17 @@ package routes
 
 import (
 	"fmt"
-	"github.com/chaseWilliams/family-map/lib/database"
-	"github.com/chaseWilliams/family-map/lib/util"
 	"net/http"
+
+	"github.com/chaseWilliams/family-map/lib/database"
+	"github.com/chaseWilliams/family-map/lib/models"
+	"github.com/chaseWilliams/family-map/lib/util"
 )
 
 /*
 Clear will wipe all data from the database
 */
-func Clear(w http.ResponseWriter, r *http.Request) (err error) {
+func Clear(w http.ResponseWriter, r *http.Request, user models.User) (err error) {
 	err = database.ClearDatabase()
 	if err != nil {
 		util.WriteBadResponse(

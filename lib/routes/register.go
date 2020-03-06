@@ -13,9 +13,8 @@ import (
 Register creates a new user account, generates 4 generations of ancestor data for the new
 user, logs the user in, and returns an auth token.
 */
-func Register(w http.ResponseWriter, r *http.Request) (err error) {
-	user := new(models.User)
-	json.NewDecoder(r.Body).Decode(user)
+func Register(w http.ResponseWriter, r *http.Request, user models.User) (err error) {
+	json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		util.WriteBadResponse(
 			w,
@@ -31,14 +30,6 @@ func Register(w http.ResponseWriter, r *http.Request) (err error) {
 		Gender:    user.Gender,
 	}
 	user.PersonID = person.PersonID
-	err = person.Save()
-	if err != nil {
-		util.WriteBadResponse(
-			w,
-			err.Error(),
-		)
-		return
-	}
 	err = user.Save()
 	if err != nil {
 		util.WriteBadResponse(
@@ -48,9 +39,16 @@ func Register(w http.ResponseWriter, r *http.Request) (err error) {
 		return
 	}
 
-	simulation.CreateFamily(person, 4)
+	_, _, err = simulation.CreateFamily(person, 5)
+	if err != nil {
+		util.WriteBadResponse(
+			w,
+			"could not simulate family: " + err.Error(),
+		)
+		return
+	}
 
-	token, err := models.NewAuthToken(*user)
+	token, err := models.NewAuthToken(user)
 	if err != nil {
 		util.WriteBadResponse(
 			w,
