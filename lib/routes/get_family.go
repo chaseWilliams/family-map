@@ -26,7 +26,7 @@ func GetFamily(w http.ResponseWriter, r *http.Request, user models.User) (err er
 	}
 
 	util.WriteOKResponse(w, dataResponse{
-		Data: familyJSON,
+		Data:    familyJSON,
 		Success: "true",
 	})
 	return

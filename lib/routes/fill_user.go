@@ -39,7 +39,7 @@ func FillUser(w http.ResponseWriter, r *http.Request, user models.User) (err err
 	if err != nil {
 		util.WriteBadResponse(
 			w,
-			"could not find user: " + err.Error(),
+			"could not find user: "+err.Error(),
 		)
 		return
 	}

@@ -37,19 +37,19 @@ type PersonJSON struct {
 }
 
 /*
-ToPerson returns a Person struct based on 
+ToPerson returns a Person struct based on
 this struct's data
 */
 func (p PersonJSON) ToPerson() Person {
 	person := Person{
-		PersonID: p.PersonID,
-		Username: p.Username,
+		PersonID:  p.PersonID,
+		Username:  p.Username,
 		FirstName: p.FirstName,
-		LastName: p.LastName,
-		Gender: p.Gender,
-		FatherID: sql.NullString{p.FatherID, true},
-		MotherID: sql.NullString{p.MotherID, true},
-		SpouseID: sql.NullString{p.SpouseID, true},
+		LastName:  p.LastName,
+		Gender:    p.Gender,
+		FatherID:  sql.NullString{p.FatherID, true},
+		MotherID:  sql.NullString{p.MotherID, true},
+		SpouseID:  sql.NullString{p.SpouseID, true},
 	}
 	if len(p.FatherID) == 0 {
 		person.FatherID.Valid = false
@@ -69,14 +69,14 @@ based on this person's data
 */
 func (p Person) ToJSON() PersonJSON {
 	return PersonJSON{
-		PersonID: p.PersonID,
-		Username: p.Username,
+		PersonID:  p.PersonID,
+		Username:  p.Username,
 		FirstName: p.FirstName,
-		LastName: p.LastName,
-		Gender: p.Gender,
-		FatherID: p.FatherID.String,
-		MotherID: p.MotherID.String,
-		SpouseID: p.SpouseID.String,
+		LastName:  p.LastName,
+		Gender:    p.Gender,
+		FatherID:  p.FatherID.String,
+		MotherID:  p.MotherID.String,
+		SpouseID:  p.SpouseID.String,
 	}
 }
 
@@ -141,7 +141,7 @@ func GetFamily(username string) (family []Person, err error) {
 	if err != nil {
 		return
 	}
-	
+
 	err = tx.Select(&family, "SELECT * FROM Persons WHERE username = ?", username)
 	return
 }

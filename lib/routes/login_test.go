@@ -15,16 +15,16 @@ func TestLogin(t *testing.T) {
 		`{"userName": "chasew", "password": "password"}`,
 	))
 	fatal(err, t)
-	
+
 	assertExpectedResponse(
 		routeTest{
-			req: req,
-			service: Login,
-			user: models.User{},
-			code: http.StatusOK,
+			req:            req,
+			service:        Login,
+			user:           models.User{},
+			code:           http.StatusOK,
 			responseStruct: loginSuccess{},
-			expectError: false,
-			name: "login",
+			expectError:    false,
+			name:           "login",
 		},
 		t,
 	)
@@ -36,16 +36,16 @@ func TestLoginFailure(t *testing.T) {
 		`{"userName": "chasew", "password": "bad_password"}`,
 	))
 	fatal(err, t)
-	
+
 	assertExpectedResponse(
 		routeTest{
-			req: req,
-			service: Login,
-			user: models.User{},
-			code: http.StatusBadRequest,
+			req:            req,
+			service:        Login,
+			user:           models.User{},
+			code:           http.StatusBadRequest,
 			responseStruct: loginSuccess{},
-			expectError: true,
-			name: "bad password login",
+			expectError:    true,
+			name:           "bad password login",
 		},
 		t,
 	)

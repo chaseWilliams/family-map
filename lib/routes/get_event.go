@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"strings"
 	"net/http"
+	"strings"
 
 	"github.com/chaseWilliams/family-map/lib/models"
 	"github.com/chaseWilliams/family-map/lib/util"
@@ -17,7 +17,7 @@ func GetEvent(w http.ResponseWriter, r *http.Request, user models.User) (err err
 	if err != nil {
 		util.WriteBadResponse(
 			w,
-			"could not get event: " + err.Error(),
+			"could not get event: "+err.Error(),
 		)
 		return
 	}

@@ -47,22 +47,22 @@ func TestFillUserFailure(t *testing.T) {
 	}
 	tests := []routeTest{
 		routeTest{
-			req: badNumReq,
-			service: FillUser,
-			user: models.User{},
-			code: http.StatusBadRequest,
+			req:            badNumReq,
+			service:        FillUser,
+			user:           models.User{},
+			code:           http.StatusBadRequest,
 			responseStruct: util.Message{},
-			expectError: true,
-			name: "bad generation number", 
+			expectError:    true,
+			name:           "bad generation number",
 		},
 		routeTest{
-			req: noUserReq,
-			service: FillUser,
-			user: models.User{},
-			code: http.StatusBadRequest,
+			req:            noUserReq,
+			service:        FillUser,
+			user:           models.User{},
+			code:           http.StatusBadRequest,
 			responseStruct: util.Message{},
-			expectError: true,
-			name: "bad generation number", 
+			expectError:    true,
+			name:           "bad generation number",
 		},
 	}
 

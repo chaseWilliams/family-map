@@ -48,7 +48,7 @@ func StartTestingSession(t testing.TB) {
 		"auth.sql",
 	}
 	for _, name := range sqlFiles {
-		filepath := path.Join(path.Dir(filename), "../../test/data/" + name)
+		filepath := path.Join(path.Dir(filename), "../../test/data/"+name)
 		fileBytes, err := ioutil.ReadFile(filepath)
 		if err != nil {
 			t.Errorf("could not open sql script %v: %v", name, err)

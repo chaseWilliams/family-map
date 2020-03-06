@@ -67,17 +67,17 @@ func TestSaveEventFailure(t *testing.T) {
 		Year:      2078,
 	}
 	/*
-	nonexistentPersonEvent := Event{
-		EventID:   "chase_dies",
-		Username:  "chasewww",
-		PersonID:  "abc",
-		Latitude:  37,
-		Longitude: 38,
-		Country:   "USA",
-		City:      "Roswell",
-		EventType: "Death",
-		Year:      2078,
-	}
+		nonexistentPersonEvent := Event{
+			EventID:   "chase_dies",
+			Username:  "chasewww",
+			PersonID:  "abc",
+			Latitude:  37,
+			Longitude: 38,
+			Country:   "USA",
+			City:      "Roswell",
+			EventType: "Death",
+			Year:      2078,
+		}
 	*/
 
 	err := malformedEvent.Save()
@@ -85,9 +85,9 @@ func TestSaveEventFailure(t *testing.T) {
 		t.Error("malformed data did not throw an error when saving")
 	}
 	/*
-	err = nonexistentPersonEvent.Save()
-	if err == nil {
-		t.Error("event data had nonexistent person, did not throw error")
-	}
+		err = nonexistentPersonEvent.Save()
+		if err == nil {
+			t.Error("event data had nonexistent person, did not throw error")
+		}
 	*/
 }

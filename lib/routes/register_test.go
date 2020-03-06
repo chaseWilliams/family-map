@@ -1,10 +1,10 @@
 package routes
 
 import (
+	"math/rand"
 	"net/http"
 	"strings"
 	"testing"
-	"math/rand"
 	"time"
 
 	"github.com/chaseWilliams/family-map/lib/database"
@@ -25,16 +25,16 @@ func TestRegister(t *testing.T) {
 		}`,
 	))
 	fatal(err, t)
-	
+
 	assertExpectedResponse(
 		routeTest{
-			req: req,
-			service: Register,
-			user: models.User{},
-			code: http.StatusOK,
+			req:            req,
+			service:        Register,
+			user:           models.User{},
+			code:           http.StatusOK,
 			responseStruct: loginSuccess{},
-			expectError: false,
-			name: "register",
+			expectError:    false,
+			name:           "register",
 		},
 		t,
 	)
@@ -64,25 +64,25 @@ func TestRegisterFailure(t *testing.T) {
 		}`,
 	))
 	fatal(err, t)
-	
+
 	tests := []routeTest{
 		routeTest{
-			req: usernameTakenReq,
-			service: Register,
-			user: models.User{},
-			code: http.StatusBadRequest,
+			req:            usernameTakenReq,
+			service:        Register,
+			user:           models.User{},
+			code:           http.StatusBadRequest,
 			responseStruct: loginSuccess{},
-			expectError: true,
-			name: "username taken register",
+			expectError:    true,
+			name:           "username taken register",
 		},
 		routeTest{
-			req: missingPasswordReq,
-			service: Register,
-			user: models.User{},
-			code: http.StatusBadRequest,
+			req:            missingPasswordReq,
+			service:        Register,
+			user:           models.User{},
+			code:           http.StatusBadRequest,
 			responseStruct: loginSuccess{},
-			expectError: true,
-			name: "missing password register",
+			expectError:    true,
+			name:           "missing password register",
 		},
 	}
 

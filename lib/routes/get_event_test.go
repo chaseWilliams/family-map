@@ -17,15 +17,15 @@ func TestGetEvent(t *testing.T) {
 
 	assertExpectedResponse(
 		routeTest{
-			req: req,
+			req:     req,
 			service: GetEvent,
 			user: models.User{
 				Username: "chasew",
 			},
-			code: http.StatusOK,
+			code:           http.StatusOK,
 			responseStruct: models.Event{},
-			expectError: false,
-			name: "get event",
+			expectError:    false,
+			name:           "get event",
 		},
 		t,
 	)
@@ -45,24 +45,24 @@ func TestGetEventFailure(t *testing.T) {
 
 	tests := []routeTest{
 		routeTest{
-			req: missingEventReq,
-			service: GetEvent,
-			user: user,
-			code: http.StatusBadRequest,
+			req:            missingEventReq,
+			service:        GetEvent,
+			user:           user,
+			code:           http.StatusBadRequest,
 			responseStruct: models.Event{},
-			expectError: true,
-			name: "nonexistent event request",
+			expectError:    true,
+			name:           "nonexistent event request",
 		},
 		routeTest{
-			req: unauthorizedEventReq,
+			req:     unauthorizedEventReq,
 			service: GetEvent,
 			user: models.User{
 				Username: "test_user",
 			},
-			code: http.StatusBadRequest,
+			code:           http.StatusBadRequest,
 			responseStruct: models.Event{},
-			expectError: true,
-			name: "unauthorized auth request",
+			expectError:    true,
+			name:           "unauthorized auth request",
 		},
 	}
 

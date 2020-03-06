@@ -43,7 +43,7 @@ func Register(w http.ResponseWriter, r *http.Request, user models.User) (err err
 	if err != nil {
 		util.WriteBadResponse(
 			w,
-			"could not simulate family: " + err.Error(),
+			"could not simulate family: "+err.Error(),
 		)
 		return
 	}

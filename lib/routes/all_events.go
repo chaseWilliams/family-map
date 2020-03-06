@@ -29,7 +29,7 @@ func AllEvents(w http.ResponseWriter, r *http.Request, user models.User) (err er
 	}
 
 	util.WriteOKResponse(w, dataResponse{
-		Data: events,
+		Data:    events,
 		Success: "true",
 	})
 	return

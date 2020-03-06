@@ -16,15 +16,15 @@ func TestGetPerson(t *testing.T) {
 
 	assertExpectedResponse(
 		routeTest{
-			req: req,
+			req:     req,
 			service: GetPerson,
 			user: models.User{
 				Username: "chasew",
 			},
-			code: http.StatusOK,
+			code:           http.StatusOK,
 			responseStruct: models.PersonJSON{},
-			expectError: false,
-			name: "get person",
+			expectError:    false,
+			name:           "get person",
 		},
 		t,
 	)
@@ -38,15 +38,15 @@ func TestGetPersonFailure(t *testing.T) {
 
 	assertExpectedResponse(
 		routeTest{
-			req: req,
+			req:     req,
 			service: GetPerson,
 			user: models.User{
 				Username: "test_user",
 			},
-			code: http.StatusBadRequest,
+			code:           http.StatusBadRequest,
 			responseStruct: models.PersonJSON{},
-			expectError: true,
-			name: "invalid get person",
+			expectError:    true,
+			name:           "invalid get person",
 		},
 		t,
 	)

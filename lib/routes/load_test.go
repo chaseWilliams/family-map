@@ -20,13 +20,13 @@ func TestLoad(t *testing.T) {
 
 	assertExpectedResponse(
 		routeTest{
-			req: req,
-			service: Load,
-			user: models.User{},
-			code: http.StatusOK,
+			req:            req,
+			service:        Load,
+			user:           models.User{},
+			code:           http.StatusOK,
 			responseStruct: util.Message{},
-			expectError: false,
-			name: "load",
+			expectError:    false,
+			name:           "load",
 		},
 		t,
 	)
@@ -39,13 +39,13 @@ func TestLoadFailure(t *testing.T) {
 
 	assertExpectedResponse(
 		routeTest{
-			req: req,
-			service: Load,
-			user: models.User{},
-			code: http.StatusBadRequest,
+			req:            req,
+			service:        Load,
+			user:           models.User{},
+			code:           http.StatusBadRequest,
 			responseStruct: util.Message{},
-			expectError: true,
-			name: "malformed data load",
+			expectError:    true,
+			name:           "malformed data load",
 		},
 		t,
 	)

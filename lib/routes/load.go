@@ -3,8 +3,8 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"io/ioutil"
+	"net/http"
 
 	"github.com/chaseWilliams/family-map/lib/database"
 	"github.com/chaseWilliams/family-map/lib/models"

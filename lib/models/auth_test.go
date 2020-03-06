@@ -9,16 +9,16 @@ import (
 
 func TestSaveAuth(t *testing.T) {
 	database.StartTestingSession(t)
-	auth := Auth {
+	auth := Auth{
 		AuthToken: util.RandomID(),
-		Username: "chasew",
+		Username:  "chasew",
 	}
 
 	/*
-	badAuth := Auth {
-		AuthToken: util.RandomID(),
-		Username: "idontexist",
-	}
+		badAuth := Auth {
+			AuthToken: util.RandomID(),
+			Username: "idontexist",
+		}
 	*/
 
 	err := auth.Save()
@@ -27,10 +27,10 @@ func TestSaveAuth(t *testing.T) {
 	}
 
 	/*
-	err = badAuth.Save()
-	if err == nil {
-		t.Error("bad auth should have failed, but it saved")
-	}
+		err = badAuth.Save()
+		if err == nil {
+			t.Error("bad auth should have failed, but it saved")
+		}
 	*/
 }
 
