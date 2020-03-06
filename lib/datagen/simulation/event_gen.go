@@ -104,7 +104,7 @@ func marriageCheck(f *family.Person, pop *family.Population, year int) {
 			!person.IsMarried() &&
 			person.Age(year) >= 18 &&
 			math.Abs(float64(person.Age(year)-f.Age(year))) <= 10 &&
-			!pop.AreFamily(*person, *f) &&
+			!family.AreFamily(person, f) &&
 			person != f {
 			suitors = append(suitors, person)
 		}
@@ -161,6 +161,5 @@ func babyCheck(f *family.Person, pop *family.Population, year int) {
 	child := family.RandomPerson(year)
 	child.HaveParents(husband, wife)
 	husband.HaveChild(child, year)
-	wife.HaveChild(child, year)
 	pop.AddPerson(child)
 }

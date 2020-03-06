@@ -1,8 +1,12 @@
 package family
 
 import (
+	"database/sql"
 	"fmt"
+	"github.com/chaseWilliams/family-map/lib/datagen/external"
 	"github.com/chaseWilliams/family-map/lib/models"
+	"github.com/chaseWilliams/family-map/lib/util"
+	"math/rand"
 )
 
 /*
@@ -28,6 +32,60 @@ type Person struct {
 // create events
 // instead of divorce on death, widow instead
 
+func (f *Person) createEvent(name string, year int) models.Event {
+	var city external.City
+	if len(f.events) == 0 {
+		city = external.RandomCity()
+	} else {
+		recentEvent := f.events[len(f.events)-1]
+		city = external.RandomCloseCity(recentEvent.Latitude, recentEvent.Longitude)
+	}
+	event := models.Event{
+		EventID:   util.RandomID(),
+		PersonID:  f.model.PersonID,
+		Latitude:  city.Latitude,
+		Longitude: city.Longitude,
+		Country:   city.Country,
+		City:      city.City,
+		EventType: name,
+		Year:      year,
+	}
+	f.events = append(f.events, event)
+	return event
+}
+
+func (f *Person) createMirrorEvent(event models.Event) {
+	event.EventID = util.RandomID()
+	event.PersonID = f.model.PersonID
+	f.events = append(f.events, event)
+}
+
+/*
+NumEvents returns the person's number of events
+*/
+func (f Person) NumEvents() int {
+	return len(f.events)
+}
+
+/*
+Save will persist the person and their events in the database
+*/
+func (f *Person) Save(username string) (err error) {
+	f.model.Username = username
+	err = f.model.Save()
+	if err != nil {
+		return
+	}
+	for _, event := range f.events {
+		event.Username = username
+		err = event.Save()
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
 /*
 Dies will appropriately set the Person as dead at given year
 */
@@ -36,6 +94,15 @@ func (f *Person) Dies(year int) {
 	if f.married {
 		f.Divorce(year)
 	}
+	f.createEvent("DEATH", year)
+}
+
+/*
+Born will set the person's birth year and create the birth event
+*/
+func (f *Person) Born(year int) {
+	f.birthYear = year
+	f.createEvent("BIRTH", year)
 }
 
 /*
@@ -48,10 +115,14 @@ func (f *Person) Marry(spouse *Person, year int) {
 	f.spouses = append(f.spouses, spouse)
 	f.marriageYears = append(f.marriageYears, year)
 	f.married = true
+	f.model.SpouseID = sql.NullString{spouse.model.PersonID, true}
+	event := f.createEvent("MARRIAGE", year)
 
 	spouse.spouses = append(spouse.spouses, f)
 	spouse.marriageYears = append(spouse.marriageYears, year)
 	spouse.married = true
+	spouse.model.SpouseID = sql.NullString{f.model.PersonID, true}
+	spouse.createMirrorEvent(event)
 }
 
 /*
@@ -69,18 +140,38 @@ func (f *Person) Divorce(year int) {
 
 	f.divorceYears = append(f.divorceYears, year)
 	f.married = false
+	f.model.SpouseID = sql.NullString{"", false}
+	event := f.createEvent("DIVORCE", year)
 
 	spouse.divorceYears = append(spouse.divorceYears, year)
 	spouse.married = false
+	spouse.model.SpouseID = sql.NullString{"", false}
+	spouse.createMirrorEvent(event)
 }
 
+/*
+HaveChild will edit the person's children and add the newborn event
+*/
 func (f *Person) HaveChild(child *Person, year int) {
+	spouse, err := f.CurrSpouse()
+	if err != nil {
+		panic(err)
+	}
 	f.children = append(f.children, child)
+	spouse.children = append(spouse.children, child)
+
+	event := f.createEvent("NEWBORN", year)
+	spouse.createMirrorEvent(event)
 }
 
+/*
+HaveParents will set the parents of the person
+*/
 func (f *Person) HaveParents(father *Person, mother *Person) {
 	f.father = father
 	f.mother = mother
+	f.model.FatherID = sql.NullString{father.model.PersonID, true}
+	f.model.MotherID = sql.NullString{mother.model.PersonID, true}
 }
 
 /*
@@ -145,6 +236,9 @@ func (f Person) CurrSpouse() (spouse *Person, err error) {
 	return f.spouses[len(f.spouses)-1], nil
 }
 
+/*
+Children will return a map of all spouses -> slice of children
+*/
 func (f Person) Children() (m map[*Person][]*Person) {
 	m = make(map[*Person][]*Person)
 	for _, spouse := range f.spouses {
@@ -217,6 +311,9 @@ func (pop *Population) GetAlive() []*Person {
 	return people
 }
 
+/*
+AddPerson will add the person to the proper generation in the population
+*/
 func (pop *Population) AddPerson(f *Person) {
 	generation := 0
 	for i, gen := range *pop {
@@ -236,8 +333,138 @@ func (pop *Population) AddPerson(f *Person) {
 /*
 AreFamily returns whether or not the two people are family members
 */
-func (pop Population) AreFamily(a Person, b Person) bool {
+func AreFamily(a *Person, b *Person) bool {
+	// are parents or siblings x removed
+	if recursiveAreParentsOrSiblings(a, b) {
+		return true
+	}
+
+	// are spouses
+	for _, spouse := range a.spouses {
+		if spouse == b {
+			return true
+		}
+		if recursiveAreParentsOrSiblings(spouse, b) {
+			return true
+		}
+	}
+	for _, spouse := range b.spouses {
+		if spouse == a {
+			return true
+		}
+		if recursiveAreParentsOrSiblings(spouse, a) {
+			return true
+		}
+	}
+
+	// are cousins
+	for _, parentA := range []*Person{a.mother, a.father} {
+		if parentA == nil {
+			continue
+		}
+		for _, parentB := range []*Person{b.mother, b.father} {
+			if parentB == nil {
+				continue
+			}
+			if areSiblingsOrParents(parentA, parentB) {
+				return true
+			}
+		}
+	}
+
 	return false
+}
+
+func recursiveAreParentsOrSiblings(a *Person, b *Person) bool {
+	// recursion up the tree
+	if goUpTree(a, b) || goUpTree(b, a) {
+		return true
+	}
+	// recusion down the tree
+	if goDownTree(a, b) || goDownTree(b, a) {
+		return true
+	}
+	return false
+}
+
+func areSiblingsOrParents(a *Person, b *Person) bool {
+	// is either one parents of the other
+	if a.mother == b ||
+		a.father == b ||
+		b.mother == a ||
+		b.father == a {
+		return true
+	}
+	// are siblings
+	if (a.mother == b.mother && a.mother != nil) ||
+		(a.father == b.father && a.father != nil) {
+		return true
+	}
+	return false
+}
+
+func goUpTree(a *Person, b *Person) bool {
+	if a == nil || b == nil {
+		return false
+	}
+	if areSiblingsOrParents(a, b) {
+		return true
+	}
+	if goUpTree(a.father, b) ||
+		goUpTree(a.mother, b) {
+		return true
+	}
+	return false
+}
+
+func goDownTree(a *Person, b *Person) bool {
+	if a == nil || b == nil {
+		return false
+	}
+	if areSiblingsOrParents(a, b) {
+		return true
+	}
+	for _, child := range a.children {
+		if goDownTree(child, b) {
+			return true
+		}
+	}
+	return false
+}
+
+/*
+RandomFamily returns a random family, determined by a random person at generation
+numGen and all family members of that person. The person will be the first
+person in the returned slice of people.
+*/
+func (pop Population) RandomFamily(personModel models.Person, numGen int) []*Person {
+	genIndex := numGen - 1
+	if len(pop) < genIndex {
+		panic(fmt.Sprintf(
+			"Population has %d generations, cannot create family at %d generation",
+			len(pop),
+			numGen,
+		))
+	}
+	generation := pop[genIndex]
+	person := generation[rand.Intn(len(generation))]
+	// overrides the person's attributes in favor of what's provided
+	person.model.PersonID = personModel.PersonID
+	person.model.Username = personModel.Username
+	person.model.FirstName = personModel.FirstName
+	person.model.LastName = personModel.LastName
+	person.model.Gender = personModel.Gender
+	person.spouses = []*Person{} // remove spouses of the person
+
+	familyMembers := []*Person{person}
+	for _, gen := range pop {
+		for _, stranger := range gen {
+			if !AreFamily(person, stranger) {
+				familyMembers = append(familyMembers, stranger)
+			}
+		}
+	}
+	return familyMembers
 }
 
 /*

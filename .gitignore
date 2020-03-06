@@ -1,6 +1,8 @@
 *.zip
 *.sqlite
-*.sql
+*.out
+*.test
 __debug_bin
 go.sum
 launch.json
+.DS_Store

@@ -10,7 +10,7 @@ func TestGetPerson(t *testing.T) {
 	database.StartTestingSession(t)
 	person := Person{
 		PersonID:  "abc",
-		Username:  "chasew",
+		Username:  sql.NullString{"chasew", true},
 		FirstName: "chase",
 		LastName:  "williams",
 		Gender:    "m",
@@ -40,14 +40,13 @@ func TestSavePerson(t *testing.T) {
 	database.StartTestingSession(t)
 	minimalPerson := Person{
 		PersonID:  "123",
-		Username:  "chasew",
 		FirstName: "Chase",
 		LastName:  "Williams",
 		Gender:    "m",
 	}
 	fullPerson := Person{
 		PersonID:  "12345",
-		Username:  "chasew",
+		Username:  sql.NullString{"chasew", true},
 		FirstName: "Chase",
 		LastName:  "Williams",
 		Gender:    "m",
@@ -69,13 +68,13 @@ func TestSavePersonFailure(t *testing.T) {
 	database.StartTestingSession(t)
 	duplicatePerson := Person{
 		PersonID:  "abc",
-		Username:  "chasew",
+		Username:  sql.NullString{"chasew", true},
 		FirstName: "Chase",
 		LastName:  "Williams",
 		Gender:    "m",
 	}
 	badPersonData := Person{
-		Username:  "chasew",
+		Username:  sql.NullString{"chasew", true},
 		FirstName: "Chase",
 		LastName:  "Williams",
 		Gender:    "m",

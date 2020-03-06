@@ -40,7 +40,13 @@ type PersonJSON struct {
 Save will take this Person model and create it in the database
 */
 func (p *Person) Save() (err error) {
-	tx := database.GetTransaction()
+	tx, err := database.GetTransaction()
+	if err != nil {
+		return
+	}
+	if !p.validate() {
+		return fmt.Errorf("person is malformed or missing properties")
+	}
 	if p.PersonID == "" {
 		return fmt.Errorf("p.PersonID must not be an empty string")
 	}
@@ -59,11 +65,21 @@ func (p *Person) Save() (err error) {
 	return
 }
 
+func (p Person) validate() bool {
+	return !(len(p.Gender) != 1 ||
+		len(p.Username) == 0 ||
+		len(p.FirstName) == 0 ||
+		len(p.LastName) == 0)
+}
+
 /*
-GetPerson returns a User given a username
+GetPerson returns a Person given a personID
 */
 func GetPerson(personID string) (person *Person, err error) {
-	tx := database.GetTransaction()
+	tx, err := database.GetTransaction()
+	if err != nil {
+		return
+	}
 	person = new(Person)
 	err = tx.QueryRowx(
 		"SELECT * FROM Persons WHERE person_id = ?",
@@ -76,7 +92,10 @@ func GetPerson(personID string) (person *Person, err error) {
 DeletePerson deletes the person from the table
 */
 func DeletePerson(personID string) (err error) {
-	tx := database.GetTransaction()
+	tx, err := database.GetTransaction()
+	if err != nil {
+		return
+	}
 	_, err = tx.Exec(
 		"DELETE FROM Persons WHERE person_id = ?",
 		personID,

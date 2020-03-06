@@ -29,6 +29,17 @@ func RandomCloseCity(lat, long float64) City {
 	return city
 }
 
+/*
+RandomCity returns a random City from the database
+*/
+func RandomCity() City {
+	cities, err := getCities()
+	if err != nil {
+		panic(err)
+	}
+	return cities[rand.Intn(len(cities))]
+}
+
 func haversine(lat1, long1, lat2, long2 float64) float64 {
 	/*
 		http://www.movable-type.co.uk/scripts/latlong.html

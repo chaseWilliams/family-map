@@ -14,6 +14,9 @@ const (
 	geoURL string = "http://geodb-free-service.wirefreethought.com/v1/geo/cities?hateoasMode=off&countryIds=US&sort=-population&limit=10&types=CITY&offset="
 )
 
+/*
+City is data about cities, as given by the Geo DB API
+*/
 type City struct {
 	ID          int     `json:"id" db:"id"`
 	CityType    string  `json:"type" db:"city_type"`
@@ -33,11 +36,15 @@ type metadata struct {
 	TotalCount    int `json:"totalCount"`
 }
 
-type geoApiResponse struct {
+type geoAPIResponse struct {
 	Data []City `json:"data"`
 	metadata
 }
 
+/*
+SetupCityData will store 200 of the most populated US cities
+in the database
+*/
 func SetupCityData() {
 	start := time.Now()
 	cities := make([]City, 0)
@@ -58,11 +65,12 @@ func SetupCityData() {
 			panic(err)
 		}
 	}
-	database.GetTransaction().Commit()
+	tx, _ := database.GetTransaction()
+	tx.Commit()
 	fmt.Printf("took %s seconds\n", time.Now().Sub(start))
 }
 
-func getGeoData(offset int) (cities *geoApiResponse, err error) {
+func getGeoData(offset int) (cities *geoAPIResponse, err error) {
 	resp, err := http.Get(geoURL + strconv.Itoa(offset))
 	if err != nil {
 		return nil, err
@@ -75,7 +83,7 @@ func getGeoData(offset int) (cities *geoApiResponse, err error) {
 		return nil, fmt.Errorf("got status code %d, %s", resp.StatusCode, b)
 	}
 
-	cities = new(geoApiResponse)
+	cities = new(geoAPIResponse)
 	err = json.NewDecoder(resp.Body).Decode(cities)
 	if err != nil {
 		return nil, err
@@ -87,7 +95,10 @@ func getGeoData(offset int) (cities *geoApiResponse, err error) {
 Save will take this City model and create it in the database
 */
 func (c City) Save() (err error) {
-	tx := database.GetTransaction()
+	tx, err := database.GetTransaction()
+	if err != nil {
+		return err
+	}
 	_, err = tx.Exec(
 		`INSERT INTO Cities
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
@@ -107,7 +118,10 @@ func (c City) Save() (err error) {
 }
 
 func getCities() (cities []City, err error) {
-	tx := database.GetTransaction()
+	tx, err := database.GetTransaction()
+	if err != nil {
+		panic(err)
+	}
 	cities = []City{}
 	err = tx.Select(&cities, "SELECT * FROM Cities")
 	return

@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"github.com/chaseWilliams/family-map/lib/database"
 	"github.com/chaseWilliams/family-map/lib/datagen/family"
 	"gonum.org/v1/gonum/stat"
 	"math"
@@ -21,6 +22,7 @@ func generateTestInitPopulation(min int, max int) (pop family.Population) {
 }
 
 func TestDeath(t *testing.T) {
+	database.StartTestingSession(t)
 	iterations := 100
 	means := make([]float64, iterations)
 	medians := make([]float64, iterations)
@@ -72,6 +74,7 @@ func TestMarriageAndDivorce(t *testing.T) {
 			average time person was single
 			sample person's marriage timeline (marriages + divorces)
 	*/
+	database.StartTestingSession(t)
 	iterations := 10
 	avgPercentHomosexual := make([]float64, iterations)
 	// index 0: data for people married 0 times, etc.
@@ -218,6 +221,7 @@ func TestBabies(t *testing.T) {
 			- average num of children per marriage
 			- sample timeline of having children
 	*/
+	database.StartTestingSession(t)
 	iterations := 25
 	avgNumChildren := make([][]float64, 0)
 
@@ -269,9 +273,10 @@ func TestPopulationSizeChange(t *testing.T) {
 		metrics:
 			-
 	*/
-	iterations := 25
-	startingPopSize := 100
-	completeGenerations := 5
+	database.StartTestingSession(t)
+	iterations := 1
+	startingPopSize := 70
+	completeGenerations := 4
 
 	avgGenSizes := make([][]float64, completeGenerations)
 	for i := 0; i < completeGenerations; i++ {

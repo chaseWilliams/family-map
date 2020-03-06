@@ -3,6 +3,7 @@ package family
 import (
 	"github.com/chaseWilliams/family-map/lib/datagen/external"
 	"github.com/chaseWilliams/family-map/lib/models"
+	"github.com/chaseWilliams/family-map/lib/util"
 	"math/rand"
 )
 
@@ -14,7 +15,7 @@ func RandomPerson(year int) (p *Person) {
 	first, last := randomName()
 	p = &Person{
 		model: models.Person{
-			PersonID:  randomID(),
+			PersonID:  util.RandomID(),
 			FirstName: first,
 			LastName:  last,
 			Gender:    randomGender(),
@@ -26,21 +27,10 @@ func RandomPerson(year int) (p *Person) {
 		marriageYears: make([]int, 0),
 		divorceYears:  make([]int, 0),
 		deathYear:     -1,
-		birthYear:     year,
 		married:       false,
 	}
-
+	p.Born(year)
 	return
-}
-
-func randomID() string {
-	lower := 48
-	upper := 90
-	bytes := make([]byte, 8)
-	for i := range bytes {
-		bytes[i] = byte(lower + rand.Intn(upper-lower+1))
-	}
-	return string(bytes)
 }
 
 func randomName() (string, string) {

@@ -24,7 +24,10 @@ type Event struct {
 Save will take this Event model and create it in the database
 */
 func (e *Event) Save() (err error) {
-	tx := database.GetTransaction()
+	tx, err := database.GetTransaction()
+	if err != nil {
+		return err
+	}
 	if e.EventID == "" {
 		return fmt.Errorf("e.EventID must not be an empty string")
 	}
@@ -48,7 +51,10 @@ func (e *Event) Save() (err error) {
 GetEvent returns a Event given a eventID
 */
 func GetEvent(eventID string) (event *Event, err error) {
-	tx := database.GetTransaction()
+	tx, err := database.GetTransaction()
+	if err != nil {
+		return
+	}
 	event = new(Event)
 	err = tx.QueryRowx(
 		"SELECT * FROM Events WHERE event_id = ?",

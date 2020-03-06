@@ -9,6 +9,7 @@ require (
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/jung-kurt/gofpdf v1.16.2 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
+	github.com/sqs/goreturns v0.0.0-20181028201513-538ac6014518
 	github.com/stretchr/objx v0.2.0 // indirect
 	golang.org/x/exp v0.0.0-20200221183520-7c80518d1cc7 // indirect
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1 // indirect

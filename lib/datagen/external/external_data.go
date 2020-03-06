@@ -10,8 +10,7 @@ const (
 )
 
 var (
-	totalCityCount int
-	nameData       []personData
+	nameData []personData
 )
 
 type personData struct {
@@ -21,15 +20,7 @@ type personData struct {
 	Region  string `json:"region"`
 }
 
-/*
 func init() {
-	cities := GetGeoData(0)
-	totalCityCount = cities.metadata.TotalCount
-	setNameData()
-}
-*/
-
-func setNameData() {
 	nameData = make([]personData, 500)
 	resp, err := http.Get(nameURL)
 	if err != nil {
@@ -49,11 +40,4 @@ uinames.com/api
 */
 func GetNameData() []personData {
 	return nameData
-}
-
-/*
-GetTotalCities returns the total number of cities that can be indexed
-*/
-func GetTotalCities() int {
-	return totalCityCount
 }

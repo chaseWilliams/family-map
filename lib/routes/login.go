@@ -30,13 +30,9 @@ func Login(w http.ResponseWriter, r *http.Request) (err error) {
 	// convert the request payload from JSON to a loginData struct
 	err = json.NewDecoder(r.Body).Decode(loginData)
 	if err != nil {
-		util.WriteResponse(
+		util.WriteBadResponse(
 			w,
-			loginFailure{
-				fmt.Sprintf("error: could not decode JSON (%v)", err.Error()),
-				"false",
-			},
-			http.StatusBadRequest,
+			fmt.Sprintf("error: could not decode JSON (%v)", err.Error()),
 		)
 		return
 	}
@@ -55,13 +51,13 @@ func Login(w http.ResponseWriter, r *http.Request) (err error) {
 		return
 	}
 
-	// get the User's auth token
-	token, err := models.GetAuthToken(user)
+	// get a new auth token
+	token, err := models.NewAuthToken(*user)
 	if err != nil {
 		util.WriteResponse(
 			w,
 			loginFailure{
-				"error: could not find user's auth tokens.",
+				"error: unable to save the user's auth token.",
 				"false",
 			},
 			http.StatusInternalServerError,
