@@ -14,11 +14,11 @@ func TestLoginUser(t *testing.T) {
 	user := User{
 		Username:  "chasew",
 		Password:  "password",
-		Email:     "email@m.org",
-		FirstName: "chase",
-		LastName:  "williams",
+		Email:     "lol@gmail.com",
+		FirstName: "Chase",
+		LastName:  "Williams",
 		Gender:    "m",
-		PersonID:  "abc",
+		PersonID:  "XVLBZGBAICMRAJWW",
 	}
 	userResult, err := d.GetUser()
 	if err != nil {

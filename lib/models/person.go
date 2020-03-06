@@ -141,6 +141,7 @@ func GetFamily(username string) (family []Person, err error) {
 	if err != nil {
 		return
 	}
+	
 	err = tx.Select(&family, "SELECT * FROM Persons WHERE username = ?", username)
 	return
 }

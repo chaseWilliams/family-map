@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"io/ioutil"
 
 	"github.com/chaseWilliams/family-map/lib/database"
 	"github.com/chaseWilliams/family-map/lib/models"
@@ -22,11 +23,27 @@ Load will clear the database, and then load all data
 func Load(w http.ResponseWriter, r *http.Request, user models.User) (err error) {
 	defer r.Body.Close()
 	data := new(loadData)
-	err = json.NewDecoder(r.Body).Decode(data)
+	reqBytes, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		util.WriteBadResponse(
+			w,
+			err.Error(),
+		)
+		return
+	}
+	err = json.Unmarshal(reqBytes, data)
 	if err != nil {
 		util.WriteBadResponse(
 			w,
 			fmt.Sprintf("could not parse JSON (%v)", err.Error()),
+		)
+		return
+	}
+
+	if data.Users == nil || data.Events == nil || data.Persons == nil {
+		util.WriteBadResponse(
+			w,
+			"missing or malformed fields",
 		)
 		return
 	}

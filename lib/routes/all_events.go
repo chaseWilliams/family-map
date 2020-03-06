@@ -16,6 +16,9 @@ type dataResponse struct {
 AllEvents Returns all events relevant to current user
 */
 func AllEvents(w http.ResponseWriter, r *http.Request, user models.User) (err error) {
+	if user.Username == "" {
+		panic("bad username") // this shouldn't happen
+	}
 	events, err := models.GetAllEvents(user.Username)
 	if err != nil {
 		util.WriteBadResponse(

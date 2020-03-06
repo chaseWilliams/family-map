@@ -37,7 +37,7 @@ func main() {
 Sets a wrapper function to all service functions that goes and sets the appropriate headers
 */
 func route(w http.ResponseWriter, r *http.Request) {
-	var service func(http.ResponseWriter, *http.Request, models.User) error
+	var service routes.Route
 	auth := false
 	json := true
 

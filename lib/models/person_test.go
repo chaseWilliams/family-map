@@ -9,17 +9,17 @@ import (
 func TestGetPerson(t *testing.T) {
 	database.StartTestingSession(t)
 	person := Person{
-		PersonID:  "abc",
+		PersonID:  "XVLBZGBAICMRAJWW",
 		Username:  "chasew",
-		FirstName: "chase",
-		LastName:  "williams",
+		FirstName: "Chase",
+		LastName:  "Williams",
 		Gender:    "m",
-		FatherID:  sql.NullString{"", false},
-		MotherID:  sql.NullString{"", false},
+		FatherID:  sql.NullString{"BQAMCZRGGUMOIAOY", true},
+		MotherID:  sql.NullString{"TCBOTOQSPYHBOZUO", true},
 		SpouseID:  sql.NullString{"", false},
 	}
 
-	p, err := GetPerson("abc")
+	p, err := GetPerson("XVLBZGBAICMRAJWW")
 	if err != nil {
 		t.Errorf("could not get person: %v", err)
 	}
@@ -51,9 +51,9 @@ func TestSavePerson(t *testing.T) {
 		FirstName: "Chase",
 		LastName:  "Williams",
 		Gender:    "m",
-		FatherID:  sql.NullString{"abc", true},
-		MotherID:  sql.NullString{"abc", true},
-		SpouseID:  sql.NullString{"abc", true},
+		FatherID:  sql.NullString{"TCBOTOQSPYHBOZUO", true},
+		MotherID:  sql.NullString{"TCBOTOQSPYHBOZUO", true},
+		SpouseID:  sql.NullString{"TCBOTOQSPYHBOZUO", true},
 	}
 	err := minimalPerson.Save()
 	if err != nil {
@@ -67,24 +67,13 @@ func TestSavePerson(t *testing.T) {
 
 func TestSavePersonFailure(t *testing.T) {
 	database.StartTestingSession(t)
-	duplicatePerson := Person{
-		PersonID:  "abc",
-		Username:  "chasew",
-		FirstName: "Chase",
-		LastName:  "Williams",
-		Gender:    "m",
-	}
 	badPersonData := Person{
 		Username:  "chasew",
 		FirstName: "Chase",
 		LastName:  "Williams",
 		Gender:    "m",
 	}
-	err := duplicatePerson.Save()
-	if err == nil {
-		t.Error("person.Save() didn't return an error for duplicate personID")
-	}
-	err = badPersonData.Save()
+	err := badPersonData.Save()
 	if err == nil {
 		t.Error("person.Save() didn't return an error for missing data")
 	}

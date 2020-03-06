@@ -7,6 +7,10 @@ import (
 	"time"
 )
 
+/*
+FileServer will attempt to return a file matching the request URL, and return a 404
+HTML page otherwise
+*/
 func FileServer(w http.ResponseWriter, r *http.Request, user models.User) (err error) {
 	log.Println("got here")
 	// try to open file

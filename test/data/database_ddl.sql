@@ -28,21 +28,36 @@ create unique index Persons_person_id_uindex
 
 
 
-create table Users (
-  username varchar(30) not null constraint Users_pk primary key,
-  password varchar(30) not null,
-  email varchar(30) not null,
-  first_name varchar(30) not null,
-  last_name varchar(30) not null,
-  gender varchar(1) not null,
-  person_id varchar(30) not null references Persons on update cascade on delete cascade
+create table Users
+(
+	username varchar(30) not null
+		constraint Users_pk
+			primary key,
+	password varchar(30) not null,
+	email varchar(30) not null,
+	first_name varchar(30) not null,
+	last_name varchar(30) not null,
+	gender varchar(1) not null,
+	person_id varchar(30) not null
 );
-create table Auth (
-  username varchar(30) not null references Users on update cascade on delete cascade,
-  auth_token varchar(50) not null constraint Auth_pk primary key
+
+
+
+create table Auth
+(
+	username varchar(30) not null
+		constraint auth_username
+			references Users
+				on update cascade on delete cascade,
+	auth_token varchar(50) not null
+		constraint Auth_pk
+			primary key
 );
-create unique index Auth_auth_token_uindex on Auth (auth_token);
-create unique index Auth_username_uindex on Auth (username);
+
+create unique index Auth_auth_token_uindex
+	on Auth (auth_token);
+
+
 create table Events (
   event_id varchar(30) not null constraint Events_pk primary key,
   username varchar(30) not null references Users on update cascade on delete cascade,

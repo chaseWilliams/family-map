@@ -1,7 +1,6 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
@@ -40,27 +39,26 @@ func StartTestingSession(t testing.TB) {
 		return
 	}
 	_, filename, _, _ := runtime.Caller(0)
-	filepath := path.Join(path.Dir(filename), "../../test/data/database_ddl.sql")
-	fileBytes, err := ioutil.ReadFile(filepath)
-	if err != nil {
-		t.Errorf("could not open database DDL script: %v", err)
-		return
+	sqlFiles := []string{
+		"database_ddl.sql",
+		"cities.sql",
+		"users.sql",
+		"persons.sql",
+		"events.sql",
+		"auth.sql",
 	}
-	_, err = db.Exec(string(fileBytes))
-	if err != nil {
-		t.Errorf("DDL script failed: %v", err)
-		return
-	}
-	filepath = path.Join(path.Dir(filename), "../../test/data/data.sql")
-	fileBytes, err = ioutil.ReadFile(filepath)
-	if err != nil {
-		t.Errorf("could not open database data insertion script: %v", err)
-		return
-	}
-	_, err = db.Exec(string(fileBytes))
-	if err != nil {
-		t.Errorf("Data insertion script failed: %v", err)
-		return
+	for _, name := range sqlFiles {
+		filepath := path.Join(path.Dir(filename), "../../test/data/" + name)
+		fileBytes, err := ioutil.ReadFile(filepath)
+		if err != nil {
+			t.Errorf("could not open sql script %v: %v", name, err)
+			return
+		}
+		_, err = db.Exec(string(fileBytes))
+		if err != nil {
+			t.Errorf("SQL script failed %v: %v", name, err)
+			return
+		}
 	}
 	tx, _ = db.Beginx()
 	return
@@ -102,11 +100,4 @@ func ClearFamily(username string) (err error) {
 		username,
 	)
 	return
-}
-
-/*
-CreateTables will create all necessary tables
-*/
-func CreateTables(db *sql.DB) {
-	panic("not implemented")
 }

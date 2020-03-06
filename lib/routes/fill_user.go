@@ -27,6 +27,14 @@ func FillUser(w http.ResponseWriter, r *http.Request, user models.User) (err err
 		}
 	}
 
+	if count < 1 {
+		util.WriteBadResponse(
+			w,
+			"generation must be a positive number",
+		)
+		return
+	}
+
 	user, err = models.GetUser(username)
 	if err != nil {
 		util.WriteBadResponse(
